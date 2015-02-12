@@ -15,40 +15,68 @@ open FSharpValidator.Functions
 
 open NUnitRunner
 
-// simple helper to cut down on repeated code
-let testRunner cases func =
-    cases |> List.map func
+[<TestCase("123", true)>]
+[<TestCase("Foo", false)>]
+[<TestCase("123Foo123", false)>]
+let ``IsNumericTest``(input : string, expected: bool) =
+    let actual = isNumeric input
+    actual |> should equal expected
 
-type TestCase = { Input : string; ExpectedResult : bool}
+[<TestCase("Foo", true)>]
+[<TestCase("1Foo", false)>]
+[<TestCase("123", false)>]
+[<TestCase("1Foo\r\n12", false)>]
+[<TestCase("Foo_Bar", false)>]
+let ``IsAlphaTest``(input : string, expected: bool) =
+    let actual = isAlpha input
+    actual |> should equal expected
 
-type TestCases = TestCase list
+[<TestCase("foo", true)>]
+[<TestCase("foo123", true)>]
+[<TestCase("FOO", false)>]
+[<TestCase("FOO123", false)>]
+let ``isLowerCaseTest``(input : string, expected: bool) =
+    let actual = isLowerCase input
+    actual |> should equal expected
 
-[<Test>]
-let ``IsNumericTest``() =
-    let testCases = ["123"; "Foo"; "123Foo123"]
-    let expectedResults = [true; false; false]
-    let results = testRunner testCases isNumeric
-    results |> should equal expectedResults
+[<TestCase("foo", false)>]
+[<TestCase("foo123", false)>]
+[<TestCase("FOO", true)>]
+[<TestCase("FOO123", true)>]
+let ``isUpperCaseTest``(input : string, expected: bool) =
+    let actual = isUpperCase input
+    actual |> should equal expected
 
-[<Test>]
-let ``IsAlphaTest``() =
-    let testCases = ["Foo"; "1Foo"; "123"; "1Foo\r\n12"; "Foo_Bar"]
-    let expectedResults = [true; false; false; false; false]
-    let results = testRunner testCases isAlpha
-    results |> should equal expectedResults
+[<TestCase("123.123", true)>]
+[<TestCase("123", true)>]
+[<TestCase("", false)>]
+let ``isFloatTest``(input : string, expected: bool) =
+    let actual = isFloat input
+    actual |> should equal expected
 
-[<Test>]
-let ``isLowerCaseTest``() =
-    let testCases = [{Input="foo"; ExpectedResult=true};{Input="foo123"; ExpectedResult=true}; {Input="FOO"; ExpectedResult=false}; {Input="FOO123"; ExpectedResult=false}]
-    let results = testRunner (testCases |> List.map (fun (T) -> T.Input)) isLowerCase
-    results |> should equal (testCases |> List.map (fun (T) -> T.ExpectedResult))
+[<TestCase("10", 5, true)>]
+[<TestCase("10", 2, true)>]
+[<TestCase("5", 2, false)>]
+[<TestCase("Foo", 2, false)>]
+let ``isDivisibleTest``(input : string, by: int, expected: bool) =
+    let actual = isDivisibleBy input by
+    actual |> should equal expected
 
-[<Test>]
-let ``isUpperCaseTest``() =
-    let testCases = ["FOO"; "FOO123"; "foo"; "foo123"]
-    let expectedResults = [true; true; false; false]
-    let results = testRunner testCases isUpperCase
-    results |> should equal expectedResults
+[<TestCase("ab", 1, 2, true)>]
+[<TestCase("abc", 1, 2, false)>]
+[<TestCase("", 1, 2, false)>]
+let ``isLengthTest``(input : string, min: int, max: int, expected: bool) =
+    let actual = isLength input min max
+    actual |> should equal expected
+
+[<TestCase("Foo", true)>]
+[<TestCase("123", true)>]
+[<TestCase("Foo@example.com", true)>]
+[<TestCase("ｆｏｏ", false)>]
+[<TestCase("１２３", false)>]
+let ``isAsciiTest``(input : string, expected: bool) =
+    let actual = isAscii input
+    actual |> should equal expected
 
 //[<Test>]
 //let ``FsCheck test 2 (string generator)``() =
