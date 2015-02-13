@@ -16,15 +16,11 @@ module Functions =
         //not sure why this isn't just done with a Regex, but, whatever, good practice :)
         let rec isCharNumeric (input : string) index =
             let currentValue = input.Chars(index)
-            if currentValue = '-' && input.Length <= 1 then
-                false
-            elif currentValue <= '/' || currentValue >= ':' then
-                false
-            else
-                if index + 1 = input.Length then
-                    true
-                else
-                    isCharNumeric input (index + 1)
+            match currentValue with
+            | c when c = '-' && input.Length <= 1 -> false
+            | c when c <= '/' || c >= ':' -> false
+            | c when index + 1 = input.Length -> true
+            | c -> isCharNumeric input (index + 1) 
         isCharNumeric input 0
 
     let isInt (input : string) =
@@ -36,23 +32,24 @@ module Functions =
 
     let isDivisibleBy input by =
         let (res, intVal) = System.Int32.TryParse(input)
-        if (res = false) then
-            false
-        else
-            intVal % by = 0
+        match (res, intVal) with
+        | (false, _) -> false
+        | (true, x) -> x % by = 0
+
 
     let isLength (input : string) min max =
         let length = input.Length
         length >= min && length <= max
+
+    let (|Ascii|_|) ch =
+        match int32 ch with
+        | x when x > 127 -> None
+        | x -> Some x
         
     let isAscii input =
         let rec isCharAscii (input : string) index =
-            let currentValue = int32 (input.Chars(index))
-            if currentValue > 127 then
-                false
-            else
-                if index + 1 = input.Length then
-                    true
-                else
-                    isCharAscii input (index + 1)
+            match input.Chars(index) with
+            | Ascii _ when index + 1 = input.Length -> true
+            | Ascii _ -> isCharAscii input (index + 1)
+            | _ -> false
         isCharAscii input 0
