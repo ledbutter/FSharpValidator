@@ -56,3 +56,21 @@ module Functions =
                 else
                     isCharAscii input (index + 1)
         isCharAscii input 0
+
+    let isMultiByte input =
+      Regex.IsMatch(input, "[^\x00-\x7F]")
+
+    let isHalfWidth input =
+      Regex.IsMatch(input, "[\u0020-\u007E\uFF61-\uFF9F\uFFA0-\uFFDC\uFFE8-\uFFEE0-9a-zA-Z]")
+
+    let isFullWidth input =
+      Regex.IsMatch(input, "[^\u0020-\u007E\uFF61-\uFF9F\uFFA0-\uFFDC\uFFE8-\uFFEE0-9a-zA-Z]")
+
+    let isVariableWidth input =
+      isHalfWidth <| input && isFullWidth <| input
+
+    let isSurrogatePair input =
+      Regex.IsMatch(input, "[\uD800-\uDBFF][\uDC00-\uDFFF]")
+
+
+

@@ -77,3 +77,62 @@ let ``isLengthTest``(input : string, min: int, max: int, expected: bool) =
 let ``isAsciiTest``(input : string, expected: bool) =
     let actual = isAscii input
     actual |> should equal expected
+
+[<TestCase("ひらがな・カタカナ、．漢字", true)>]
+[<TestCase("あいうえお foobar", true)>]
+[<TestCase("Foo＠example.com", true)>]
+[<TestCase("1234abcDEｘｙｚ", true)>]
+[<TestCase("ｶﾀｶﾅ", true)>]
+[<TestCase("中文", true)>]
+[<TestCase("æøå", true)>]
+[<TestCase("abc", false)>]
+[<TestCase("abc123", false)>]
+[<TestCase("<>@\" *.", false)>]
+let ``isMultiByteTest``(input : string, expected: bool) =
+  let actual = isMultiByte input
+  actual |> should equal expected
+
+[<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", true)>]
+[<TestCase("l-btn_02--active", true)>]
+[<TestCase("abc123い", true)>]
+[<TestCase("ｶﾀｶﾅﾞﾬ￩", true)>]
+[<TestCase("あいうえお", false)>]
+[<TestCase("００１１", false)>]
+let ``isHalfWidthTest``(input: string, expected : bool) =
+  let actual = isHalfWidth input
+  actual |> should equal expected
+
+[<TestCase("ひらがな・カタカナ、．漢字", true)>]
+[<TestCase("３ー０　ａ＠ｃｏｍ", true)>]
+[<TestCase("Ｆｶﾀｶﾅﾞﾬ", true)>]
+[<TestCase("Good＝Parts", true)>]
+[<TestCase("abc", false)>]
+[<TestCase("abc123", false)>]
+[<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", false)>]
+let ``isFullWidthTest``(input : string, expected : bool) =
+  let actual = isFullWidth input
+  actual |> should equal expected
+
+[<TestCase("ひらがなカタカナ漢字ABCDE", true)>]
+[<TestCase("３ー０123", true)>]
+[<TestCase("Ｆｶﾀｶﾅﾞﾬ", true)>]
+[<TestCase("Good＝Parts", true)>]
+[<TestCase("abc", false)>]
+[<TestCase("abc123", false)>]
+[<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", false)>]
+[<TestCase("ひらがな・カタカナ、．漢字", false)>]
+[<TestCase("１２３４５６", false)>]
+[<TestCase("ｶﾀｶﾅﾞﾬ", false)>]
+let ``isVariableWidthTest``(input : string, expected : bool) =
+  let actual = isVariableWidth input
+  actual |> should equal expected
+
+[<TestCase("𠮷野𠮷", true)>]
+[<TestCase("𩸽", true)>]
+[<TestCase("ABC千𥧄1-2-3", true)>]
+[<TestCase("吉野竈", false)>]
+[<TestCase("鮪", false)>]
+[<TestCase("ABC1-2-3", false)>]
+let ``isSurrogatePairTest``(input : string, expected : bool) =
+  let actual = isSurrogatePair input
+  actual |> should equal expected
