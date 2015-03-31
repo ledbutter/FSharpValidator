@@ -144,3 +144,19 @@ let ``isSurrogatePairTest``(input : string, expected : bool) =
 let ``isInTest``(input : string, values : string[], expected : bool) =
   let actual = isIn input values
   actual |> should equal expected
+
+[<TestCase("::1", IpVersion.Version4, false)>]
+[<TestCase("127.0.0.1", IpVersion.Version4, true)>]
+[<TestCase("0.0.0.0", IpVersion.Version4, true)>]
+[<TestCase("255.255.255.255", IpVersion.Version4, true)>]
+[<TestCase("abc", IpVersion.Version4, false)>]
+[<TestCase("256.0.0.0", IpVersion.Version4, false)>]
+[<TestCase("26.0.0.256", IpVersion.Version4, false)>]
+[<TestCase("::1", IpVersion.Version6, true)>]
+[<TestCase("2001:db8:0000:1:1:1:1:1", IpVersion.Version6, true)>]
+[<TestCase("127.0.0.1", IpVersion.Version6, false)>]
+[<TestCase("0.0.0.0", IpVersion.Version6, false)>]
+[<TestCase("::1", IpVersion.Version6, true)>]
+let ``isIpTest``(input : string, ipVersion : IpVersion, expected : bool) =
+  let actual = isIp input ipVersion
+  actual |> should equal expected

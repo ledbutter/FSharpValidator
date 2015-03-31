@@ -73,3 +73,21 @@ module Functions =
       values
       |> Array.exists (fun s -> s = input)
 
+    type IpVersion =
+      | Version4=0
+      | Version6=1
+
+    let isIp input ipVersion =
+      match ipVersion with
+      | IpVersion.Version4 ->
+        let isMatch = Regex.IsMatch(input, "^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$")
+        match isMatch with
+        | true ->
+          let parts = input.Split('.')
+          parts
+          |> Array.map (fun p -> int p)
+          |> Array.max <= 255
+        | _ -> false
+      | IpVersion.Version6 ->
+        Regex.IsMatch(input, "^::|^::1|^([a-fA-F0-9]{1,4}::?){1,7}([a-fA-F0-9]{1,4})$")
+      | _ -> failwith "Unexpected IpVersionType"
