@@ -69,5 +69,7 @@ module Functions =
     let isSurrogatePair input =
       Regex.IsMatch(input, "[\uD800-\uDBFF][\uDC00-\uDFFF]")
 
-
+    let isIn input values = 
+      values
+      |> Array.exists (fun s -> s = input)
 
