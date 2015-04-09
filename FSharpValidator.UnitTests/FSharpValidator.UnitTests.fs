@@ -159,3 +159,30 @@ let ``isInTest``(input : string, values : string[], expected : bool) =
 let ``isIpTest``(input : string, ipVersion : IpVersion, expected : bool) =
   let actual = isIp input ipVersion
   actual |> should equal expected
+
+[<TestCase("foo@bar.com", true)>]
+[<TestCase("foo@bar.com.au", true)>]
+[<TestCase("foo+bar@bar.com", true)>]
+[<TestCase("invalidemail@", false)>]
+[<TestCase("invalid.com", false)>]
+[<TestCase("@invalid.com", false)>]
+let ``isEmailTest``(input : string, expected : bool) =
+  let actual = isEmail input
+  actual |> should equal expected
+
+[<TestCase("deadBEEF", true)>]
+[<TestCase("ff0044", true)>]
+[<TestCase("abcdefg", false)>]
+[<TestCase("", false)>]
+[<TestCase("..", false)>]
+let ``isHexadecimalTest``(input : string, expected : bool) =
+  let actual = isHexadecimal input
+  actual |> should equal expected
+
+[<TestCase("Foo1", true)>]
+[<TestCase("foo1", true)>]
+[<TestCase("Foo 1", false)>]
+[<TestCase("Foo_", false)>]
+let ``isAlphanumericTest``(input : string, expected : bool) =
+  let actual = isAlphanumeric input
+  actual |> should equal expected

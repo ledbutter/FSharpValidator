@@ -2,6 +2,7 @@
 
 open System
 open System.Text.RegularExpressions
+open System.ComponentModel.DataAnnotations
 
 
 module Functions =  
@@ -92,3 +93,13 @@ module Functions =
       | IpVersion.Version6 ->
         Regex.IsMatch(input, "^::|^::1|^([a-fA-F0-9]{1,4}::?){1,7}([a-fA-F0-9]{1,4})$")
       | _ -> failwith "Unexpected IpVersionType"
+
+    let isEmail input =
+      let emailAttribute = new EmailAddressAttribute()
+      emailAttribute.IsValid(input)
+
+    let isHexadecimal input =
+      Regex.IsMatch(input, "^[0-9a-fA-F]+$")
+
+    let isAlphanumeric input =
+      Regex.IsMatch(input, "^[a-zA-Z0-9]+$")
