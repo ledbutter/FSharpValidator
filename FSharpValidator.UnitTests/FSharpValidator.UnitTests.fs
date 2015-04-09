@@ -127,7 +127,6 @@ let ``isVariableWidthTest``(input : string, expected : bool) =
   let actual = isVariableWidth input
   actual |> should equal expected
 
-[<Ignore("Need to find out why this returns false for all values")>]
 [<TestCase("𠮷野𠮷", true)>]
 [<TestCase("𩸽", true)>]
 [<TestCase("ABC千𥧄1-2-3", true)>]

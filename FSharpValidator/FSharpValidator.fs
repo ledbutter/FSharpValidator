@@ -67,7 +67,8 @@ module Functions =
       isHalfWidth <| input && isFullWidth <| input
 
     let isSurrogatePair input =
-      Regex.IsMatch(input, "[\uD800-\uDBFF][\uDC00-\uDFFF]")
+      // need to escape the value, due to bug that will be fixed in v4.0: https://github.com/Microsoft/visualfsharp/issues/338
+      Regex.IsMatch(input, @"[\uD800-\uDBFF][\uDC00-\uDFFF]")
 
     let isIn input values = 
       values
