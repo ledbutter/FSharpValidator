@@ -1,188 +1,252 @@
 ﻿module FSharpValidator.UnitTests
 
-// https://github.com/fsharp/FsCheck/blob/master/Docs/Documentation.md
 // https://github.com/fsharp/FsUnit
-// https://code.google.com/p/unquote/
 
+open System
 open FsUnit
-open FsCheck
 open NUnit.Framework
-open Swensen.Unquote
 open FSharpValidator.Functions
 
-// Note on FsCheck tests: The NUnit test runner will still green-light failing tests with Check.Quick 
-// even though it reports them as failing. Use Check.QuickThrowOnFailure instead.
+[<TestFixture>]
+type ``FSharpValidatorTests`` () =
 
-open NUnitRunner
+  [<TestCase("123", true)>]
+  [<TestCase("Foo", false)>]
+  [<TestCase("123Foo123", false)>]
+  member x.``IsNumericTest``(input : string, expected: bool) =
+      let actual = isNumeric input
+      actual |> should equal expected
 
-[<TestCase("123", true)>]
-[<TestCase("Foo", false)>]
-[<TestCase("123Foo123", false)>]
-let ``IsNumericTest``(input : string, expected: bool) =
-    let actual = isNumeric input
+  [<TestCase("Foo", true)>]
+  [<TestCase("1Foo", false)>]
+  [<TestCase("123", false)>]
+  [<TestCase("1Foo\r\n12", false)>]
+  [<TestCase("Foo_Bar", false)>]
+  member x.``IsAlphaTest``(input : string, expected: bool) =
+      let actual = isAlpha input
+      actual |> should equal expected
+
+  [<TestCase("foo", true)>]
+  [<TestCase("foo123", true)>]
+  [<TestCase("FOO", false)>]
+  [<TestCase("FOO123", false)>]
+  member x.``isLowerCaseTest``(input : string, expected: bool) =
+      let actual = isLowerCase input
+      actual |> should equal expected
+
+  [<TestCase("foo", false)>]
+  [<TestCase("foo123", false)>]
+  [<TestCase("FOO", true)>]
+  [<TestCase("FOO123", true)>]
+  member x.``isUpperCaseTest``(input : string, expected: bool) =
+      let actual = isUpperCase input
+      actual |> should equal expected
+
+  [<TestCase("123.123", true)>]
+  [<TestCase("123", true)>]
+  [<TestCase("", false)>]
+  member x.``isFloatTest``(input : string, expected: bool) =
+      let actual = isFloat input
+      actual |> should equal expected
+
+  [<TestCase("10", 5, true)>]
+  [<TestCase("10", 2, true)>]
+  [<TestCase("5", 2, false)>]
+  [<TestCase("Foo", 2, false)>]
+  member x.``isDivisibleTest``(input : string, by: int, expected: bool) =
+      let actual = isDivisibleBy input by
+      actual |> should equal expected
+
+  [<TestCase("ab", 1, 2, true)>]
+  [<TestCase("abc", 1, 2, false)>]
+  [<TestCase("", 1, 2, false)>]
+  member x.``isLengthTest``(input : string, min: int, max: int, expected: bool) =
+      let actual = isLength input min max
+      actual |> should equal expected
+
+  [<TestCase("Foo", true)>]
+  [<TestCase("123", true)>]
+  [<TestCase("Foo@example.com", true)>]
+  [<TestCase("ｆｏｏ", false)>]
+  [<TestCase("１２３", false)>]
+  member x.``isAsciiTest``(input : string, expected: bool) =
+      let actual = isAscii input
+      actual |> should equal expected
+
+  [<TestCase("ひらがな・カタカナ、．漢字", true)>]
+  [<TestCase("あいうえお foobar", true)>]
+  [<TestCase("Foo＠example.com", true)>]
+  [<TestCase("1234abcDEｘｙｚ", true)>]
+  [<TestCase("ｶﾀｶﾅ", true)>]
+  [<TestCase("中文", true)>]
+  [<TestCase("æøå", true)>]
+  [<TestCase("abc", false)>]
+  [<TestCase("abc123", false)>]
+  [<TestCase("<>@\" *.", false)>]
+  member x.``isMultiByteTest``(input : string, expected: bool) =
+    let actual = isMultiByte input
     actual |> should equal expected
 
-[<TestCase("Foo", true)>]
-[<TestCase("1Foo", false)>]
-[<TestCase("123", false)>]
-[<TestCase("1Foo\r\n12", false)>]
-[<TestCase("Foo_Bar", false)>]
-let ``IsAlphaTest``(input : string, expected: bool) =
-    let actual = isAlpha input
+  [<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", true)>]
+  [<TestCase("l-btn_02--active", true)>]
+  [<TestCase("abc123い", true)>]
+  [<TestCase("ｶﾀｶﾅﾞﾬ￩", true)>]
+  [<TestCase("あいうえお", false)>]
+  [<TestCase("００１１", false)>]
+  member x.``isHalfWidthTest``(input: string, expected : bool) =
+    let actual = isHalfWidth input
     actual |> should equal expected
 
-[<TestCase("foo", true)>]
-[<TestCase("foo123", true)>]
-[<TestCase("FOO", false)>]
-[<TestCase("FOO123", false)>]
-let ``isLowerCaseTest``(input : string, expected: bool) =
-    let actual = isLowerCase input
+  [<TestCase("ひらがな・カタカナ、．漢字", true)>]
+  [<TestCase("３ー０　ａ＠ｃｏｍ", true)>]
+  [<TestCase("Ｆｶﾀｶﾅﾞﾬ", true)>]
+  [<TestCase("Good＝Parts", true)>]
+  [<TestCase("abc", false)>]
+  [<TestCase("abc123", false)>]
+  [<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", false)>]
+  member x.``isFullWidthTest``(input : string, expected : bool) =
+    let actual = isFullWidth input
     actual |> should equal expected
 
-[<TestCase("foo", false)>]
-[<TestCase("foo123", false)>]
-[<TestCase("FOO", true)>]
-[<TestCase("FOO123", true)>]
-let ``isUpperCaseTest``(input : string, expected: bool) =
-    let actual = isUpperCase input
+  [<TestCase("ひらがなカタカナ漢字ABCDE", true)>]
+  [<TestCase("３ー０123", true)>]
+  [<TestCase("Ｆｶﾀｶﾅﾞﾬ", true)>]
+  [<TestCase("Good＝Parts", true)>]
+  [<TestCase("abc", false)>]
+  [<TestCase("abc123", false)>]
+  [<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", false)>]
+  [<TestCase("ひらがな・カタカナ、．漢字", false)>]
+  [<TestCase("１２３４５６", false)>]
+  [<TestCase("ｶﾀｶﾅﾞﾬ", false)>]
+  member x.``isVariableWidthTest``(input : string, expected : bool) =
+    let actual = isVariableWidth input
     actual |> should equal expected
 
-[<TestCase("123.123", true)>]
-[<TestCase("123", true)>]
-[<TestCase("", false)>]
-let ``isFloatTest``(input : string, expected: bool) =
-    let actual = isFloat input
+  [<TestCase("𠮷野𠮷", true)>]
+  [<TestCase("𩸽", true)>]
+  [<TestCase("ABC千𥧄1-2-3", true)>]
+  [<TestCase("吉野竈", false)>]
+  [<TestCase("鮪", false)>]
+  [<TestCase("ABC1-2-3", false)>]
+  member x.``isSurrogatePairTest``(input : string, expected : bool) =
+    let actual = isSurrogatePair input
     actual |> should equal expected
 
-[<TestCase("10", 5, true)>]
-[<TestCase("10", 2, true)>]
-[<TestCase("5", 2, false)>]
-[<TestCase("Foo", 2, false)>]
-let ``isDivisibleTest``(input : string, by: int, expected: bool) =
-    let actual = isDivisibleBy input by
+  [<TestCase("Foo", [|"Foo"; "Bar"|], true)>]
+  [<TestCase("Bar", [|"Foo"; "Bar"|], true)>]
+  [<TestCase("Baz", [|"Foo"; "Bar"|], false)>]
+  member x.``isInTest``(input : string, values : string[], expected : bool) =
+    let actual = isIn input values
     actual |> should equal expected
 
-[<TestCase("ab", 1, 2, true)>]
-[<TestCase("abc", 1, 2, false)>]
-[<TestCase("", 1, 2, false)>]
-let ``isLengthTest``(input : string, min: int, max: int, expected: bool) =
-    let actual = isLength input min max
+  [<TestCase("::1", IpVersion.Version4, false)>]
+  [<TestCase("127.0.0.1", IpVersion.Version4, true)>]
+  [<TestCase("0.0.0.0", IpVersion.Version4, true)>]
+  [<TestCase("255.255.255.255", IpVersion.Version4, true)>]
+  [<TestCase("abc", IpVersion.Version4, false)>]
+  [<TestCase("256.0.0.0", IpVersion.Version4, false)>]
+  [<TestCase("26.0.0.256", IpVersion.Version4, false)>]
+  [<TestCase("::1", IpVersion.Version6, true)>]
+  [<TestCase("2001:db8:0000:1:1:1:1:1", IpVersion.Version6, true)>]
+  [<TestCase("127.0.0.1", IpVersion.Version6, false)>]
+  [<TestCase("0.0.0.0", IpVersion.Version6, false)>]
+  [<TestCase("::1", IpVersion.Version6, true)>]
+  member x.``isIpTest``(input : string, ipVersion : IpVersion, expected : bool) =
+    let actual = isIp input ipVersion
     actual |> should equal expected
 
-[<TestCase("Foo", true)>]
-[<TestCase("123", true)>]
-[<TestCase("Foo@example.com", true)>]
-[<TestCase("ｆｏｏ", false)>]
-[<TestCase("１２３", false)>]
-let ``isAsciiTest``(input : string, expected: bool) =
-    let actual = isAscii input
+  [<TestCase("foo@bar.com", true)>]
+  [<TestCase("foo@bar.com.au", true)>]
+  [<TestCase("foo+bar@bar.com", true)>]
+  [<TestCase("invalidemail@", false)>]
+  [<TestCase("invalid.com", false)>]
+  [<TestCase("@invalid.com", false)>]
+  member x.``isEmailTest``(input : string, expected : bool) =
+    let actual = isEmail input
     actual |> should equal expected
 
-[<TestCase("ひらがな・カタカナ、．漢字", true)>]
-[<TestCase("あいうえお foobar", true)>]
-[<TestCase("Foo＠example.com", true)>]
-[<TestCase("1234abcDEｘｙｚ", true)>]
-[<TestCase("ｶﾀｶﾅ", true)>]
-[<TestCase("中文", true)>]
-[<TestCase("æøå", true)>]
-[<TestCase("abc", false)>]
-[<TestCase("abc123", false)>]
-[<TestCase("<>@\" *.", false)>]
-let ``isMultiByteTest``(input : string, expected: bool) =
-  let actual = isMultiByte input
-  actual |> should equal expected
+  [<TestCase("deadBEEF", true)>]
+  [<TestCase("ff0044", true)>]
+  [<TestCase("abcdefg", false)>]
+  [<TestCase("", false)>]
+  [<TestCase("..", false)>]
+  member x.``isHexadecimalTest``(input : string, expected : bool) =
+    let actual = isHexadecimal input
+    actual |> should equal expected
 
-[<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", true)>]
-[<TestCase("l-btn_02--active", true)>]
-[<TestCase("abc123い", true)>]
-[<TestCase("ｶﾀｶﾅﾞﾬ￩", true)>]
-[<TestCase("あいうえお", false)>]
-[<TestCase("００１１", false)>]
-let ``isHalfWidthTest``(input: string, expected : bool) =
-  let actual = isHalfWidth input
-  actual |> should equal expected
+  [<TestCase("Foo1", true)>]
+  [<TestCase("foo1", true)>]
+  [<TestCase("Foo 1", false)>]
+  [<TestCase("Foo_", false)>]
+  member x.``isAlphanumericTest``(input : string, expected : bool) =
+    let actual = isAlphanumeric input
+    actual |> should equal expected
 
-[<TestCase("ひらがな・カタカナ、．漢字", true)>]
-[<TestCase("３ー０　ａ＠ｃｏｍ", true)>]
-[<TestCase("Ｆｶﾀｶﾅﾞﾬ", true)>]
-[<TestCase("Good＝Parts", true)>]
-[<TestCase("abc", false)>]
-[<TestCase("abc123", false)>]
-[<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", false)>]
-let ``isFullWidthTest``(input : string, expected : bool) =
-  let actual = isFullWidth input
-  actual |> should equal expected
+  [<TestCase("#ff0034", true)>]
+  [<TestCase("#CCCCCC", true)>]
+  [<TestCase("fff", true)>]
+  [<TestCase("#fff", true)>]
+  [<TestCase("#ff", false)>]
+  [<TestCase("fff0", false)>]
+  [<TestCase("#ff12FG", false)>]
+  member x.``isHexColorTest`` (input : string, expected : bool) =
+    let actual = isHexColor input
+    actual |> should equal expected
 
-[<TestCase("ひらがなカタカナ漢字ABCDE", true)>]
-[<TestCase("３ー０123", true)>]
-[<TestCase("Ｆｶﾀｶﾅﾞﾬ", true)>]
-[<TestCase("Good＝Parts", true)>]
-[<TestCase("abc", false)>]
-[<TestCase("abc123", false)>]
-[<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", false)>]
-[<TestCase("ひらがな・カタカナ、．漢字", false)>]
-[<TestCase("１２３４５６", false)>]
-[<TestCase("ｶﾀｶﾅﾞﾬ", false)>]
-let ``isVariableWidthTest``(input : string, expected : bool) =
-  let actual = isVariableWidth input
-  actual |> should equal expected
+  [<TestCase("Foo", true)>]
+  [<TestCase("Bar", false)>]
+  [<TestCase("Baz", false)>]
+  member x.``equalsTest`` (input : string, expected : bool) =
+    let actual = equals input "Foo"
+    actual |> should equal expected
 
-[<TestCase("𠮷野𠮷", true)>]
-[<TestCase("𩸽", true)>]
-[<TestCase("ABC千𥧄1-2-3", true)>]
-[<TestCase("吉野竈", false)>]
-[<TestCase("鮪", false)>]
-[<TestCase("ABC1-2-3", false)>]
-let ``isSurrogatePairTest``(input : string, expected : bool) =
-  let actual = isSurrogatePair input
-  actual |> should equal expected
+  [<TestCase(null, false)>]
+  [<TestCase("", false)>]
+  [<TestCase("Not a date", false)>]
+  [<TestCase("01/01/2001", true)>]
+  [<TestCase("50/20/2017", false)>]
+  [<TestCase("01-01-2001", true)>]
+  [<TestCase("2001/01/01", true)>]
+  [<TestCase("01.01.2001", true)>]
+  [<TestCase("Not05/01A/date/2001", false)>]
+  member x.``isDateTest`` (input : string, expected : bool) =
+    let actual = isDate input
+    actual |> should equal expected
 
-[<TestCase("Foo", [|"Foo"; "Bar"|], true)>]
-[<TestCase("Bar", [|"Foo"; "Bar"|], true)>]
-[<TestCase("Baz", [|"Foo"; "Bar"|], false)>]
-let ``isInTest``(input : string, values : string[], expected : bool) =
-  let actual = isIn input values
-  actual |> should equal expected
+  static member isAfterData : Object[][] = 
+    [|
+      [| null; new DateTime(2011, 8, 4); false |]
+      [| "2011-08-04"; new DateTime(2011, 8, 3); true|]
+      [| "2011-08-10"; new DateTime(2011, 8, 3); true|]
+      [| "2010-07-02"; new DateTime(2011, 8, 3); false|]
+      [| "2011-08-03"; new DateTime(2011, 8, 3); false|]
+      [| "foo"; new DateTime(2011, 8, 3); false|]
+    |]
 
-[<TestCase("::1", IpVersion.Version4, false)>]
-[<TestCase("127.0.0.1", IpVersion.Version4, true)>]
-[<TestCase("0.0.0.0", IpVersion.Version4, true)>]
-[<TestCase("255.255.255.255", IpVersion.Version4, true)>]
-[<TestCase("abc", IpVersion.Version4, false)>]
-[<TestCase("256.0.0.0", IpVersion.Version4, false)>]
-[<TestCase("26.0.0.256", IpVersion.Version4, false)>]
-[<TestCase("::1", IpVersion.Version6, true)>]
-[<TestCase("2001:db8:0000:1:1:1:1:1", IpVersion.Version6, true)>]
-[<TestCase("127.0.0.1", IpVersion.Version6, false)>]
-[<TestCase("0.0.0.0", IpVersion.Version6, false)>]
-[<TestCase("::1", IpVersion.Version6, true)>]
-let ``isIpTest``(input : string, ipVersion : IpVersion, expected : bool) =
-  let actual = isIp input ipVersion
-  actual |> should equal expected
+  [<TestCaseSource("isAfterData")>]
+  member x.``isAfterTest`` (input : string, date : DateTime, expected : bool) =
+    let actual = isAfter input date
+    actual |> should equal expected
 
-[<TestCase("foo@bar.com", true)>]
-[<TestCase("foo@bar.com.au", true)>]
-[<TestCase("foo+bar@bar.com", true)>]
-[<TestCase("invalidemail@", false)>]
-[<TestCase("invalid.com", false)>]
-[<TestCase("@invalid.com", false)>]
-let ``isEmailTest``(input : string, expected : bool) =
-  let actual = isEmail input
-  actual |> should equal expected
+  static member isBeforeData : Object[][] =
+    [|
+      [|null; new DateTime(2011, 8, 4); false|]
+      [|""; new DateTime(2011, 8, 4); false|]
 
-[<TestCase("deadBEEF", true)>]
-[<TestCase("ff0044", true)>]
-[<TestCase("abcdefg", false)>]
-[<TestCase("", false)>]
-[<TestCase("..", false)>]
-let ``isHexadecimalTest``(input : string, expected : bool) =
-  let actual = isHexadecimal input
-  actual |> should equal expected
+      [|"2010-07-02"; new DateTime(2011, 8, 4); true|]
+      [|"2010-08-04"; new DateTime(2011, 8, 4); true|]
+      [|"2011-08-04"; new DateTime(2011, 8, 4); false|]
+      [|"2011-09-10"; new DateTime(2011, 8, 4); false|]
 
-[<TestCase("Foo1", true)>]
-[<TestCase("foo1", true)>]
-[<TestCase("Foo 1", false)>]
-[<TestCase("Foo_", false)>]
-let ``isAlphanumericTest``(input : string, expected : bool) =
-  let actual = isAlphanumeric input
-  actual |> should equal expected
+      [|"2010-07-02"; new DateTime(2011, 7, 4); true|]
+      [|"2010-08-04"; new DateTime(2011, 7, 4); true|]
+      [|"2011-08-04"; new DateTime(2011, 7, 4); false|]
+      [|"2011-09-10"; new DateTime(2011, 7, 4); false|]
+
+      [|"foo"; new DateTime(2011, 7, 4); false|]
+    |]
+
+  [<TestCaseSource("isBeforeData")>]
+  member x.``isBeforeTest`` (input : string, date : DateTime, expected : bool) =
+    let actual = isBefore input date
+    actual |> should equal expected

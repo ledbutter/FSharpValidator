@@ -103,3 +103,23 @@ module Functions =
 
     let isAlphanumeric input =
       Regex.IsMatch(input, "^[a-zA-Z0-9]+$")
+
+    let isHexColor input =
+      Regex.IsMatch(input, "^#?(?:[0-9a-fA-F]{3}){1,2}$")
+
+    let equals (input:string) (comparison:string) =
+      input.Equals(comparison)
+
+    let isDate input =
+      let result, date = DateTime.TryParse(input)
+      result
+
+    let isAfter input date =
+      match DateTime.TryParse(input) with
+      | (false, _) -> false
+      | (true, parsedDate) -> date < parsedDate
+
+    let isBefore input date =
+      match DateTime.TryParse(input) with
+      | (false, _) -> false
+      | (true, parsedDate) -> date > parsedDate
