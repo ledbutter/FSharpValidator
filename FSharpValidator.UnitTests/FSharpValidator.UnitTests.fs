@@ -6,6 +6,7 @@ open System
 open FsUnit
 open NUnit.Framework
 open FSharpValidator.Functions
+open System.Text.RegularExpressions
 
 [<TestFixture>]
 type ``FSharpValidatorTests`` () =
@@ -249,4 +250,41 @@ type ``FSharpValidatorTests`` () =
   [<TestCaseSource("isBeforeData")>]
   member x.``isBeforeTest`` (input : string, date : DateTime, expected : bool) =
     let actual = isBefore input date
+    actual |> should equal expected
+
+  [<TestCase(null, false)>]
+  [<TestCase("Not a JSON string", false)>]
+  [<TestCase("{\"username\":\"Admin\"}", true)>]
+  [<TestCase("{username:\"Admin\"", false)>]
+  member x.``isJsonTest`` (input : string, expected : bool) =
+    let actual = isJson input
+    actual |> should equal expected
+
+  [<TestCase(null, true)>]
+  [<TestCase("", false)>]
+  [<TestCase("  ", false)>]
+  [<TestCase("NULL", false)>]
+  member x.``isNullTest`` (input : string, expected : bool) =
+    let actual = isNull input
+    actual |> should equal expected
+
+  [<TestCase("Validator", "Valid", true)>]
+  [<TestCase("Validator", "lid", true)>]
+  [<TestCase("Validator", "", true)>]
+  [<TestCase("", "", true)>]
+  [<TestCase("", " ", false)>]
+  member x.``containsTest`` (input : string, element : string, expected : bool) =
+    let actual = contains input element
+    actual |> should equal expected
+
+  [<TestCase("Foo", "Foo", RegexOptions.None, true)>]
+  [<TestCase("Bar", "B.*", RegexOptions.None, true)>]
+  [<TestCase("Baz", "B.*", RegexOptions.None, true)>]
+  [<TestCase("bar", "B.*", RegexOptions.None, false)>]
+  [<TestCase("Foo", "B.*", RegexOptions.None, false)>]
+  [<TestCase("foo", "Foo", RegexOptions.None, false)>]
+  [<TestCase("Foo", "foo", RegexOptions.IgnoreCase, true)>]
+  [<TestCase("\r\nFoo", "^Foo$", RegexOptions.Multiline, true)>]
+  member x.``matchesTest`` (input : string, element : string, options : RegexOptions, expected : bool) =
+    let actual = matches input element options
     actual |> should equal expected

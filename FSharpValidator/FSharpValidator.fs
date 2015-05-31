@@ -3,7 +3,7 @@
 open System
 open System.Text.RegularExpressions
 open System.ComponentModel.DataAnnotations
-
+open System.Web.Script.Serialization
 
 module Functions =  
 
@@ -123,3 +123,24 @@ module Functions =
       match DateTime.TryParse(input) with
       | (false, _) -> false
       | (true, parsedDate) -> date > parsedDate
+
+    let isJson input =
+      let serializer = new JavaScriptSerializer()
+      try
+        serializer.Deserialize<Object>(input) |> ignore
+        true
+      with 
+        | :? System.ArgumentException -> false
+
+    let isNull input =
+      match input with
+      | null -> true
+      | _ -> false
+
+    let contains (input:string) (element:string) =
+      input.Contains(element)
+
+    let matches (input:string) (pattern:string) (options:RegexOptions) =
+      // C# implementation has options with a default value of None
+      // but F# doesn't allow optional parameters except on member methods
+      Regex.IsMatch(input, pattern, options)
