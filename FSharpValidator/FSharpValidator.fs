@@ -144,3 +144,11 @@ module Functions =
       // C# implementation has options with a default value of None
       // but F# doesn't allow optional parameters except on member methods
       Regex.IsMatch(input, pattern, options)
+
+    let isMongoId (input:string) =
+      input.Length = 24 && (isHexadecimal input)
+
+    let isByteLength (input:string) min max =
+      // C# implementation has max with a default value of int.MaxValue
+      // but, again, F# doesn't allow optional parameters except on member methods
+      input.Length >= min && input.Length <= max

@@ -14,7 +14,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("123", true)>]
   [<TestCase("Foo", false)>]
   [<TestCase("123Foo123", false)>]
-  member x.``IsNumericTest``(input : string, expected: bool) =
+  member x.``IsNumericTest``(input:string, expected: bool) =
       let actual = isNumeric input
       actual |> should equal expected
 
@@ -23,7 +23,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("123", false)>]
   [<TestCase("1Foo\r\n12", false)>]
   [<TestCase("Foo_Bar", false)>]
-  member x.``IsAlphaTest``(input : string, expected: bool) =
+  member x.``IsAlphaTest``(input:string, expected: bool) =
       let actual = isAlpha input
       actual |> should equal expected
 
@@ -31,7 +31,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("foo123", true)>]
   [<TestCase("FOO", false)>]
   [<TestCase("FOO123", false)>]
-  member x.``isLowerCaseTest``(input : string, expected: bool) =
+  member x.``isLowerCaseTest``(input:string, expected: bool) =
       let actual = isLowerCase input
       actual |> should equal expected
 
@@ -39,14 +39,14 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("foo123", false)>]
   [<TestCase("FOO", true)>]
   [<TestCase("FOO123", true)>]
-  member x.``isUpperCaseTest``(input : string, expected: bool) =
+  member x.``isUpperCaseTest``(input:string, expected: bool) =
       let actual = isUpperCase input
       actual |> should equal expected
 
   [<TestCase("123.123", true)>]
   [<TestCase("123", true)>]
   [<TestCase("", false)>]
-  member x.``isFloatTest``(input : string, expected: bool) =
+  member x.``isFloatTest``(input:string, expected: bool) =
       let actual = isFloat input
       actual |> should equal expected
 
@@ -54,14 +54,14 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("10", 2, true)>]
   [<TestCase("5", 2, false)>]
   [<TestCase("Foo", 2, false)>]
-  member x.``isDivisibleTest``(input : string, by: int, expected: bool) =
+  member x.``isDivisibleTest``(input:string, by: int, expected: bool) =
       let actual = isDivisibleBy input by
       actual |> should equal expected
 
   [<TestCase("ab", 1, 2, true)>]
   [<TestCase("abc", 1, 2, false)>]
   [<TestCase("", 1, 2, false)>]
-  member x.``isLengthTest``(input : string, min: int, max: int, expected: bool) =
+  member x.``isLengthTest``(input:string, min: int, max: int, expected: bool) =
       let actual = isLength input min max
       actual |> should equal expected
 
@@ -70,7 +70,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("Foo@example.com", true)>]
   [<TestCase("ｆｏｏ", false)>]
   [<TestCase("１２３", false)>]
-  member x.``isAsciiTest``(input : string, expected: bool) =
+  member x.``isAsciiTest``(input:string, expected: bool) =
       let actual = isAscii input
       actual |> should equal expected
 
@@ -84,7 +84,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("abc", false)>]
   [<TestCase("abc123", false)>]
   [<TestCase("<>@\" *.", false)>]
-  member x.``isMultiByteTest``(input : string, expected: bool) =
+  member x.``isMultiByteTest``(input:string, expected: bool) =
     let actual = isMultiByte input
     actual |> should equal expected
 
@@ -94,7 +94,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("ｶﾀｶﾅﾞﾬ￩", true)>]
   [<TestCase("あいうえお", false)>]
   [<TestCase("００１１", false)>]
-  member x.``isHalfWidthTest``(input: string, expected : bool) =
+  member x.``isHalfWidthTest``(input: string, expected:bool) =
     let actual = isHalfWidth input
     actual |> should equal expected
 
@@ -105,7 +105,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("abc", false)>]
   [<TestCase("abc123", false)>]
   [<TestCase("!\"#$%&()<>/+=-_? ~^|.,@`{}[]", false)>]
-  member x.``isFullWidthTest``(input : string, expected : bool) =
+  member x.``isFullWidthTest``(input:string, expected:bool) =
     let actual = isFullWidth input
     actual |> should equal expected
 
@@ -119,7 +119,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("ひらがな・カタカナ、．漢字", false)>]
   [<TestCase("１２３４５６", false)>]
   [<TestCase("ｶﾀｶﾅﾞﾬ", false)>]
-  member x.``isVariableWidthTest``(input : string, expected : bool) =
+  member x.``isVariableWidthTest``(input:string, expected:bool) =
     let actual = isVariableWidth input
     actual |> should equal expected
 
@@ -129,14 +129,14 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("吉野竈", false)>]
   [<TestCase("鮪", false)>]
   [<TestCase("ABC1-2-3", false)>]
-  member x.``isSurrogatePairTest``(input : string, expected : bool) =
+  member x.``isSurrogatePairTest``(input:string, expected:bool) =
     let actual = isSurrogatePair input
     actual |> should equal expected
 
   [<TestCase("Foo", [|"Foo"; "Bar"|], true)>]
   [<TestCase("Bar", [|"Foo"; "Bar"|], true)>]
   [<TestCase("Baz", [|"Foo"; "Bar"|], false)>]
-  member x.``isInTest``(input : string, values : string[], expected : bool) =
+  member x.``isInTest``(input:string, values:string[], expected:bool) =
     let actual = isIn input values
     actual |> should equal expected
 
@@ -152,7 +152,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("127.0.0.1", IpVersion.Version6, false)>]
   [<TestCase("0.0.0.0", IpVersion.Version6, false)>]
   [<TestCase("::1", IpVersion.Version6, true)>]
-  member x.``isIpTest``(input : string, ipVersion : IpVersion, expected : bool) =
+  member x.``isIpTest``(input:string, ipVersion:IpVersion, expected:bool) =
     let actual = isIp input ipVersion
     actual |> should equal expected
 
@@ -162,7 +162,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("invalidemail@", false)>]
   [<TestCase("invalid.com", false)>]
   [<TestCase("@invalid.com", false)>]
-  member x.``isEmailTest``(input : string, expected : bool) =
+  member x.``isEmailTest``(input:string, expected:bool) =
     let actual = isEmail input
     actual |> should equal expected
 
@@ -171,7 +171,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("abcdefg", false)>]
   [<TestCase("", false)>]
   [<TestCase("..", false)>]
-  member x.``isHexadecimalTest``(input : string, expected : bool) =
+  member x.``isHexadecimalTest``(input:string, expected:bool) =
     let actual = isHexadecimal input
     actual |> should equal expected
 
@@ -179,7 +179,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("foo1", true)>]
   [<TestCase("Foo 1", false)>]
   [<TestCase("Foo_", false)>]
-  member x.``isAlphanumericTest``(input : string, expected : bool) =
+  member x.``isAlphanumericTest``(input:string, expected:bool) =
     let actual = isAlphanumeric input
     actual |> should equal expected
 
@@ -190,14 +190,14 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("#ff", false)>]
   [<TestCase("fff0", false)>]
   [<TestCase("#ff12FG", false)>]
-  member x.``isHexColorTest`` (input : string, expected : bool) =
+  member x.``isHexColorTest`` (input:string, expected:bool) =
     let actual = isHexColor input
     actual |> should equal expected
 
   [<TestCase("Foo", true)>]
   [<TestCase("Bar", false)>]
   [<TestCase("Baz", false)>]
-  member x.``equalsTest`` (input : string, expected : bool) =
+  member x.``equalsTest`` (input:string, expected:bool) =
     let actual = equals input "Foo"
     actual |> should equal expected
 
@@ -210,11 +210,11 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("2001/01/01", true)>]
   [<TestCase("01.01.2001", true)>]
   [<TestCase("Not05/01A/date/2001", false)>]
-  member x.``isDateTest`` (input : string, expected : bool) =
+  member x.``isDateTest`` (input:string, expected:bool) =
     let actual = isDate input
     actual |> should equal expected
 
-  static member isAfterData : Object[][] = 
+  static member isAfterData:Object[][] = 
     [|
       [| null; new DateTime(2011, 8, 4); false |]
       [| "2011-08-04"; new DateTime(2011, 8, 3); true|]
@@ -225,11 +225,11 @@ type ``FSharpValidatorTests`` () =
     |]
 
   [<TestCaseSource("isAfterData")>]
-  member x.``isAfterTest`` (input : string, date : DateTime, expected : bool) =
+  member x.``isAfterTest`` (input:string, date:DateTime, expected:bool) =
     let actual = isAfter input date
     actual |> should equal expected
 
-  static member isBeforeData : Object[][] =
+  static member isBeforeData:Object[][] =
     [|
       [|null; new DateTime(2011, 8, 4); false|]
       [|""; new DateTime(2011, 8, 4); false|]
@@ -248,7 +248,7 @@ type ``FSharpValidatorTests`` () =
     |]
 
   [<TestCaseSource("isBeforeData")>]
-  member x.``isBeforeTest`` (input : string, date : DateTime, expected : bool) =
+  member x.``isBeforeTest`` (input:string, date:DateTime, expected:bool) =
     let actual = isBefore input date
     actual |> should equal expected
 
@@ -256,7 +256,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("Not a JSON string", false)>]
   [<TestCase("{\"username\":\"Admin\"}", true)>]
   [<TestCase("{username:\"Admin\"", false)>]
-  member x.``isJsonTest`` (input : string, expected : bool) =
+  member x.``isJsonTest`` (input:string, expected:bool) =
     let actual = isJson input
     actual |> should equal expected
 
@@ -264,7 +264,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("", false)>]
   [<TestCase("  ", false)>]
   [<TestCase("NULL", false)>]
-  member x.``isNullTest`` (input : string, expected : bool) =
+  member x.``isNullTest`` (input:string, expected:bool) =
     let actual = isNull input
     actual |> should equal expected
 
@@ -273,7 +273,7 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("Validator", "", true)>]
   [<TestCase("", "", true)>]
   [<TestCase("", " ", false)>]
-  member x.``containsTest`` (input : string, element : string, expected : bool) =
+  member x.``containsTest`` (input:string, element:string, expected:bool) =
     let actual = contains input element
     actual |> should equal expected
 
@@ -285,6 +285,28 @@ type ``FSharpValidatorTests`` () =
   [<TestCase("foo", "Foo", RegexOptions.None, false)>]
   [<TestCase("Foo", "foo", RegexOptions.IgnoreCase, true)>]
   [<TestCase("\r\nFoo", "^Foo$", RegexOptions.Multiline, true)>]
-  member x.``matchesTest`` (input : string, element : string, options : RegexOptions, expected : bool) =
+  member x.``matchesTest`` (input:string, element:string, options:RegexOptions, expected:bool) =
     let actual = matches input element options
+    actual |> should equal expected
+
+  [<TestCase("507f1f77bcf86cd799439011", true)>]
+  [<TestCase("507f1f77bcf86cd7994390", false)>]
+  [<TestCase("507f1f77bcf86cd79943901z", false)>]
+  [<TestCase("", false)>]
+  [<TestCase("507f1f77bcf86cd799439011 ", false)>]
+  [<TestCase("507s1f77bcf86cd799439011", false)>]
+  member x.``isMongoIdTest`` (input:string, expected:bool) =
+    let actual = isMongoId input
+    actual |> should equal expected
+
+  [<TestCase("Foo", 3, true)>]
+  [<TestCase("Foo", 2, true)>]
+  [<TestCase("Foo Bar", 3, true)>]
+  [<TestCase("Foo", 5, false)>]
+  [<TestCase("F", 2, false)>]
+  [<TestCase("", 2, false)>]
+  member x.``isByteLengthTest`` (input:string, min:int, expected:bool) =
+    // no optional parameters for F#, so just hard-code in here the default value
+    // which is always used in the C# test cases
+    let actual = isByteLength input min System.Int32.MaxValue
     actual |> should equal expected
