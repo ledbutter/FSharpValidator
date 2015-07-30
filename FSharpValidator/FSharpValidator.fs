@@ -152,3 +152,10 @@ module Functions =
       // C# implementation has max with a default value of int.MaxValue
       // but, again, F# doesn't allow optional parameters except on member methods
       input.Length >= min && input.Length <= max
+
+    let isBase64 (input:string) =
+      //thanks, StackOverflow! http://stackoverflow.com/q/6309379/1346943
+      match input.Length % 4 with
+      | 0 -> 
+        Regex.IsMatch(input, @"^[a-zA-Z0-9\+/]*={0,3}$")
+      | _ -> false

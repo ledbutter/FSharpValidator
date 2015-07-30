@@ -310,3 +310,12 @@ type ``FSharpValidatorTests`` () =
     // which is always used in the C# test cases
     let actual = isByteLength input min System.Int32.MaxValue
     actual |> should equal expected
+
+  [<TestCase("SGk=", true)>]
+  [<TestCase("VmFsaWRhdG9y", true)>]
+  [<TestCase("Foo", false)>]
+  [<TestCase("Foo\r\nBar", false)>]
+  [<TestCase("Foo?", false)>]
+  member x.``isBase64Test`` (input:string, expected:bool) =
+    let actual = isBase64 input
+    actual |> should equal expected
