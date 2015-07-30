@@ -319,3 +319,16 @@ type ``FSharpValidatorTests`` () =
   member x.``isBase64Test`` (input:string, expected:bool) =
     let actual = isBase64 input
     actual |> should equal expected
+
+  [<TestCase("375556917985515", true)>]
+  [<TestCase("36050234196908", true)>]
+  [<TestCase("4716461583322103", true)>]
+  [<TestCase("4716-2210-5188-5662", true)>]
+  [<TestCase("4929 7226 5379 7141", true)>]
+  [<TestCase("5398228707871527", true)>]
+  [<TestCase("Foo", false)>]
+  [<TestCase("Bar123", false)>]
+  [<TestCase("5398228707871528", false)>]
+  member x.``isCreditCardTest`` (input:string, expected:bool) =
+    let actual = isCreditCard input
+    actual |> should equal expected

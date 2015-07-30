@@ -6,6 +6,9 @@ open System.ComponentModel.DataAnnotations
 open System.Web.Script.Serialization
 
 module Functions =  
+    //private funcs
+    let private rev xs = Seq.fold (fun acc x -> x::acc) [] xs
+
 
     let isAlpha input = Regex.IsMatch(input, "^[a-zA-Z]+$")
 
@@ -159,3 +162,19 @@ module Functions =
       | 0 -> 
         Regex.IsMatch(input, @"^[a-zA-Z0-9\+/]*={0,3}$")
       | _ -> false
+
+    let isCreditCard (input:string) =
+      let cleansedInput = input.Replace(" ", "").Replace("-", "")
+
+      let validCreditCardChar c =
+        c >= '0' && c <= '9'
+
+      if isNumeric cleansedInput then
+        let sumOfDigits = 
+          cleansedInput |> Seq.where validCreditCardChar 
+          |> rev
+          |> Seq.mapi (fun i e -> ((int)e - 48) * if i % 2 = 0 then 1 else 2)
+          |> Seq.sumBy (fun e -> e/10 + e%10)
+        sumOfDigits % 10 = 0
+      else
+        false
