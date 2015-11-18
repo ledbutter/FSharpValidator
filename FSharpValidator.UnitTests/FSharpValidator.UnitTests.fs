@@ -332,3 +332,24 @@ type ``FSharpValidatorTests`` () =
   member x.``isCreditCardTest`` (input:string, expected:bool) =
     let actual = isCreditCard input
     actual |> should equal expected
+
+  [<TestCase("domain.com", true, false, false, true)>]
+  [<TestCase("dom.plato", true, false, false, true)>]
+  [<TestCase("a.domain.co", true, false, false, true)>]
+  [<TestCase("foo--bar.com", true, false, false, true)>]
+  [<TestCase("xn--froschgrn-x9a.com", true, false, false, true)>]
+  [<TestCase("rebecca.blackfriday", true, false, false, true)>]
+  [<TestCase("abc", true, false, false, false)>]
+  [<TestCase("256.0.0.0", true, false, false, false)>]
+  [<TestCase("_.com", true, false, false, false)>]
+  [<TestCase("*.some.com", true, false, false, false)>]
+  [<TestCase("s!ome.com", true, false, false, false)>]
+  [<TestCase("domain.com/", true, false, false, false)>]
+  [<TestCase("/more.com", true, false, false, false)>]
+  [<TestCase("example.com.", true, false, true, true)>]
+  [<TestCase("test_.com", true, true, false, true)>]
+  [<TestCase("example", false, false, false, true)>]
+  [<TestCase("input", false, false, false, true)>]
+  member x.``isFqdnTest`` (input:string, requireTld:bool, allowUnderscore:bool, allowTrailingDot:bool, expected:bool) =
+    let actual = isFqdn input requireTld allowUnderscore allowTrailingDot
+    actual |> should equal expected

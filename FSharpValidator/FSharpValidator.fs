@@ -12,11 +12,11 @@ module Functions =
 
     let isAlpha input = Regex.IsMatch(input, "^[a-zA-Z]+$")
 
-    let isLowerCase (input : string) = input.Equals(input.ToLower())
+    let isLowerCase (input:string) = input.Equals(input.ToLower())
 
-    let isUpperCase (input : string) = input.Equals(input.ToUpper())
+    let isUpperCase (input:string) = input.Equals(input.ToUpper())
 
-    let isNumeric (input : string) =
+    let isNumeric (input:string) =
         //not sure why this isn't just done with a Regex, but, whatever, good practice :)
         let rec isCharNumeric (input : string) index =
             let currentValue = input.Chars(index)
@@ -27,7 +27,7 @@ module Functions =
             | c -> isCharNumeric input (index + 1) 
         isCharNumeric input 0
 
-    let isInt (input : string) =
+    let isInt (input:string) =
         isNumeric input
 
     let isFloat input = 
@@ -41,7 +41,7 @@ module Functions =
         | (true, x) -> x % by = 0
 
 
-    let isLength (input : string) min max =
+    let isLength (input:string) min max =
         let length = input.Length
         length >= min && length <= max
         
@@ -178,3 +178,41 @@ module Functions =
         sumOfDigits % 10 = 0
       else
         false
+
+    let isFqdn (input:string) requireTld allowUnderscore allowTrailingDot =
+        // another example of a C# method with optional params, but required here
+        let trimmedInput =
+            if allowTrailingDot && input.EndsWith(".") then
+                input.Remove(input.Length - 1)
+            else
+                input
+        let inputParts = trimmedInput.Split('.')
+        let remainingParts = 
+            if requireTld then
+                match inputParts.Length with
+                | 1 -> Array.empty<string>
+                | _ ->
+                    let lastPart = inputParts.[inputParts.Length - 1]
+                    if Regex.IsMatch(lastPart, "^([a-z\u00a1-\uffff]{2,}|xn[a-z0-9-]{2,})$") then
+                        inputParts |> Seq.take (inputParts.Length - 1) |> Seq.toArray
+                    else
+                        Array.empty<string>
+            else
+                inputParts
+        match remainingParts.Length with
+        | 0 -> false
+        | _ ->
+            let partInvalid (part:string) =
+                let partValue =
+                    if allowUnderscore then
+                        if part.Contains("__") then
+                            String.Empty
+                        else
+                            part.Replace("_", "")
+                    else
+                        part
+                match Regex.IsMatch(partValue, "^[a-z\u00a1-\uffff0-9-]+$", RegexOptions.IgnoreCase) with
+                | false -> true
+                | true ->
+                    partValue.[0] = '-' || partValue.EndsWith("-") || partValue.Contains("---")
+            remainingParts |> Seq.exists(partInvalid) |> not
